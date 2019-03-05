@@ -1231,4 +1231,52 @@ describe("LastFm", () => {
 			done();
 		});
 	});
+
+	test("search for an album, artist, and track", done => {
+		const lastFm = new LastFm({ apiKey, secret, sessionKey });
+
+		nock("http://ws.audioscrobbler.com")
+			.get("/2.0/")
+			.query({
+				"api_key": apiKey,
+				"format": "json",
+				"method": "album.search"
+			})
+			.reply(200, { "status": "ok" });
+		
+		nock("http://ws.audioscrobbler.com")
+			.get("/2.0/")
+			.query({
+				"api_key": apiKey,
+				"format": "json",
+				"method": "artist.search"
+			})
+			.reply(200, { "status": "ok" });
+		
+		nock("http://ws.audioscrobbler.com")
+			.get("/2.0/")
+			.query({
+				"api_key": apiKey,
+				"format": "json",
+				"method": "track.search"
+			})
+			.reply(200, { "status": "ok" });
+
+		lastFm.search({}, (err, data) => {
+			expect(err).toBeNull();
+			expect(data).toEqual({
+				"album": {
+					"status": "ok"
+				},
+				"artist": {
+					"status": "ok"
+				},
+				"track": {
+					"status": "ok"
+				}
+			});
+
+			done();
+		});
+	});
 });
